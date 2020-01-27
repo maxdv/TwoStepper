@@ -1,3 +1,3 @@
-#! /usr/bin/env python
-from twostepper import app
-app.run(host='0.0.0.0', debug = True)
+#!/usr/bin/env python
+from twostepper_flask_app import app
+app.run(debug = True)
