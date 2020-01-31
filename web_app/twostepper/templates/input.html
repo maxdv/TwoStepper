@@ -34,7 +34,7 @@
   <body>
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
-"templates/cesareans.html" 89L, 3618C
+"templates/dance_moves.html" 89L, 3618C
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -43,20 +43,20 @@
     <div class="container">
 
     <div class="starter-template">
-        <h2>Input Page</h2>
-        <p>Enter some user input</p>
+        <h2>TwoStepper: the dance move identifier.</h2>
+        <h3>Upload a short clip of a single dance move, and find out how to do it on your own time!</h3>
     </div>
 
     <div class = "container">
 
       <form  action="/output" method="GET">
-        <div class="form-group">
-          <label for="birth_month">Birth Month:</label>
-          <input type="text" id="birth_month" name='birth_month' placeholder="e.g. ">
-        </div>
 
+          <label class="btn btn-default">
+            Browse <input type="file" hidden>
+          </label>
+          
         <div>
-          <button type="submit" class="btn btn-default btn-lg">Find these Cesareans!</button>
+          <button type="submit" class="btn btn-default btn-lg">Find the Dance Move!</button>
         </div>
 
       </form>
