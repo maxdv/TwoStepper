@@ -35,9 +35,6 @@ except OSError:
 UPLOAD_FOLDER = videoFile_path
 ALLOWED_EXTENSIONS = {'mov', 'mp4', 'avi', 'gif'}
 
-#declare the app
-# app = Flask(__name__)
-# app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
@@ -47,15 +44,14 @@ def allowed_file(filename):
     """ function used to ensure file is in expected format"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# def allowed_file_size(movie_clip):
-#     """ function used to ensure file is not too big"""
-#     if os.stat.st_size(movie_clip):
-#         return ' Your file size is too big! Try timming the clip to < 1 MB'
+def allowed_file_size(movie_clip):
+    """ function used to ensure file is not too big"""
+    if os.stat.st_size(movie_clip):
+        return ' Your file size is too big! Try timming the clip to < 1 MB'
 
 
 @app.route('/')
 def upload_form():
-#     user_input_clip = str(request.form)
     return render_template('upload.html')
 
 @app.route('/', methods = ['POST'])
@@ -106,18 +102,23 @@ def upload_file():
             return redirect(request.url)
         
         file = request.files['file']
-        if file.filename == '':
+        file_secure = secure_filename(file.filename)
+        if file_secure == '':
             flash('No file selected for uploading')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
+        if not allowed_file(file_secure):
+            flash('Wrong File Format! Please use .mov, .mp4, or .avi')
+            return redirect(request.url)
+        
+        if file and allowed_file(file_secure):
 #             filename = secure_filename(file.filename)
             filename = file.filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 #             flash('File successfully uploaded')
 #             return redirect('/output')
-        else:
-            flash('Allowed file types are mov, mp4, avi, gif')
-            return redirect(request.url)
+#         else:
+#             flash('Allowed file types are mov, mp4, avi, gif')
+#             return redirect(request.url)
         
 #     user_clip = request.files['user_input_clip'].read()
 #     user_clip.save(videoFile_path + '/' + profile.filename)
