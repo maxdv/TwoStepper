@@ -35,9 +35,9 @@ def video_to_frames(videoFile_path,frameFile_path):
     
 def predict(skeletons_path, parent_directory):
     skeleton_name = listdir_nohidden(skeletons_path)[0]
-    skelly_string = skeletons_path + '/' + skeleton_name
-    img_ts = np.genfromtxt(skelly_string, delimiter=',')
-    
+    skeleton_string = skeletons_path + '/' + skeleton_name
+    user_input_skeleton_raw = np.genfromtxt(skeleton_string, delimiter=',')
+    user_input_skeleton_transformed = 1-np.absolute(user_input_skeleton_raw.reshape(1,36,60,1))
 #     input_shape = (36, 60, 1)
     
 #     model = Sequential()
@@ -77,10 +77,50 @@ def predict(skeletons_path, parent_directory):
 #     #if probabilities are spread out and there's no clear winner, return "unsure"
 #     if pred[0][index_predict] <= 0.33:
 #         return "unsure"
+    model = Sequential()
 
-    dict_labels = {0: 'turn', 1: 'cuddle', 2: 'shadow'}
+    model.add(InputLayer(input_shape = [36,60,1]))
 
-    return dict_labels
+    model.add(Conv2D(filters=60, kernel_size=[36,4],strides=[36,2],padding='same', activation='softmax'))
+    model.add(MaxPool2D(pool_size=4, padding='same'))
+
+    model.add(Conv2D(filters=60, kernel_size=[18,4],strides=[18,2],padding='same', activation='softmax'))
+    model.add(MaxPool2D(pool_size=4, padding='same'))
+
+    model.add(Conv2D(filters=60, kernel_size=[9,4],strides=[9,2],padding='same', activation='softmax'))
+    model.add(MaxPool2D(pool_size=4, padding='same'))
+
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(512,activation='softmax'))
+    model.add(Dropout(rate=0.5))
+    model.add(Dense(3,activation='softmax'))
+
+    model.load_weights('model_weights.h5')
+    model.compile(optimizer=Adam(lr=1e-3), loss='categorical_crossentropy',metrics=['accuracy'])
+
+    
+    model_out = model.predict(user_input_skeleton_transformed)
+    
+    index_predict = np.argmax(model_out[0])
+    dict_labels = ['turn', 'cuddle', 'shadow']
+    
+#     if pred[0][index_predict] <= 0.33:
+#         return "unsure"
+#     else:
+#         return dict_labels[index_predict]
+#     if np.argmax(model_out) == 0:
+#         str_label='Turn'
+#     elif np.argmax(model_out) == 1:
+#         str_label='Cuddle'
+#     elif np.argmax(model_out) == 2:
+#         str_label='Shadow'
+    # plt.imshow(data)
+    
+
+    return dict_labels[index_predict]
+
+    
 
     
     
