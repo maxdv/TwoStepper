@@ -10,6 +10,7 @@ from keras.models import Sequential
 from keras.layers import  *
 from keras.optimizers import *
 from keras.models import model_from_json
+from keras import backend as K
 
 
 def listdir_nohidden(directory):
@@ -77,6 +78,8 @@ def predict(skeletons_path, parent_directory):
 #     #if probabilities are spread out and there's no clear winner, return "unsure"
 #     if pred[0][index_predict] <= 0.33:
 #         return "unsure"
+    K.clear_session()
+
     model = Sequential()
 
     model.add(InputLayer(input_shape = [36,60,1]))
@@ -117,6 +120,7 @@ def predict(skeletons_path, parent_directory):
 #         str_label='Shadow'
     # plt.imshow(data)
     
+    K.clear_session()
 
     return dict_labels[index_predict]
 
