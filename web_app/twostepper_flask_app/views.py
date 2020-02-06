@@ -129,7 +129,7 @@ def upload_file():
     user_hpe = frames_to_hpe(frameFile_path, skeletons_path, protoFile, weightsFile)
     
     predicted_class = predict(skeletons_path, parent_directory)
-    predicted_class = 'cuddle'
+    
     return redirect(f"https://www.youtube.com/results?search_query=two+step+{predicted_class}+tutorial")
     if __name__ == "__main__":
         app.run()
