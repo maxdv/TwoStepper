@@ -1,25 +1,61 @@
 <!doctype html>
-<title>TwoStepper Upload</title>
-</h1>TwoStepper Upload</h1>
-<h2>Select a file to upload</h2>
-<p>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class=flashes>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-</p>
-<form method="post" action="/" enctype="multipart/form-data">
-    <dl>
-        <p>
-            <input type="file" name="file" autocomplete="off" required>
-        </p>
-    </dl>
-    <p>
-        <input type="submit" value="Submit">
-    </p>
-</form>
+<html lang="en">
+
+<style>
+    body {
+    background: url('../static/background1.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.jumbotron {
+    display: table-cell;
+    vertical-align: middle;
+}
+</style>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- <link href="../static/cover.css" rel="stylesheet"> -->
+
+    <title>TwoStepper</title>
+
+</head>
+<body>
+
+    <!-- Page Content -->
+    <div class="text-dark container col-9">
+    <!-- Jumbotron Header -->
+    <header class=" jumbotron my-0 p-4">
+    <h2 class="strong">TwoStepper <span class="small
+    text-muted">    Learn to impress on the dance floor</span></h2><hr class="my-4">
+    <p class="lead">Learning new dance moves can be difficult, no matter what your skill level. TwoStepper is here for you to learn new moves you see on the dance floor! </p>
+    </header>
+    <div style="height:14px;"></div> 
+    <center>
+    <header class=" jumbotron my-2 p-4">
+    <h2 class="strong">Upload your movie</h2>
+    <p class="lead">Try to keep your camera steady, and focus only on the dance move you want to learn how to do.</p>
+    <div style="height:14px;"></div>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+      <br><br>
+      <div align="center">
+        </div>
+        <br><br>
+        <script>
+            var previewImage = function(event) {
+            var preview = document.getElementById('your-image');
+            preview.src = URL.createObjectURL(event.target.files[0]);
+            preview.style.display = "block";
+            };
+        </script>
+    </center>
+
+</body>
+</html>
