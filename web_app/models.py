@@ -12,12 +12,13 @@ from keras.optimizers import *
 from keras.models import model_from_json
 from keras import backend as K
 
-
+# Generates a list of files in a directory excluding the hidden ones
 def listdir_nohidden(directory):
     filelist = os.listdir(directory)
     return [x for x in filelist
             if not (x.startswith('.'))]
 
+# Imports a video file and saves it as a series of images
 def video_to_frames(videoFile_path,frameFile_path):
 
     videoFile = str(listdir_nohidden(videoFile_path)[0])
@@ -34,50 +35,13 @@ def video_to_frames(videoFile_path,frameFile_path):
     vidcap.release()
     cv2.destroyAllWindows()
     
+# Takes a time series array and predicts a related dance move
 def predict(skeletons_path, parent_directory):
     skeleton_name = listdir_nohidden(skeletons_path)[0]
     skeleton_string = skeletons_path + '/' + skeleton_name
     user_input_skeleton_raw = np.genfromtxt(skeleton_string, delimiter=',')
     user_input_skeleton_transformed = 1-np.absolute(user_input_skeleton_raw.reshape(1,36,60,1))
-#     input_shape = (36, 60, 1)
     
-#     model = Sequential()
-#     model.add(Conv2D(filters=60, kernel_size=[36,4],strides=[36,2],padding='same', activation='relu'))
-#     model.add(MaxPool2D(pool_size=4, padding='same'))
-
-#     model.add(Conv2D(filters=60, kernel_size=[18,4],strides=[18,2],padding='same', activation='relu'))
-#     model.add(MaxPool2D(pool_size=4, padding='same'))
-
-#     model.add(Conv2D(filters=60, kernel_size=[9,4],strides=[9,2],padding='same', activation='relu'))
-#     model.add(MaxPool2D(pool_size=4, padding='same'))
-
-#     model.add(Dropout(0.25))
-#     model.add(Flatten())
-#     model.add(Dense(512,activation='relu'))
-#     model.add(Dropout(rate=0.5))
-#     model.add(Dense(3,activation='relu'))
-
-# #     optimizer = Adam(lr=1e-3)
-
-    
-#     model.load_weights('model_weights.h5')
-
-
-
-#     model.compile(loss='categorical_crossentropy',
-#                   optimizer='rmsprop',
-#                   metrics=['accuracy'])
-
-#     pred = model.predict(img_ts)
-    
-#     index_predict = np.argmax(pred[0])
-    
-#     # summarize model.
-#     model_summ = model.summary()
-    
-#     #if probabilities are spread out and there's no clear winner, return "unsure"
-#     if pred[0][index_predict] <= 0.33:
-#         return "unsure"
     K.clear_session()
 
     model = Sequential()
@@ -108,23 +72,20 @@ def predict(skeletons_path, parent_directory):
     index_predict = np.argmax(model_out[0])
     dict_labels = ['turn', 'cuddle', 'shadow']
     
-#     if pred[0][index_predict] <= 0.33:
-#         return "unsure"
-#     else:
-#         return dict_labels[index_predict]
-#     if np.argmax(model_out) == 0:
-#         str_label='Turn'
-#     elif np.argmax(model_out) == 1:
-#         str_label='Cuddle'
-#     elif np.argmax(model_out) == 2:
-#         str_label='Shadow'
-    # plt.imshow(data)
+    
+    if model_out[0][index_predict] <= 0.33: # if the predictions are bad
+        move_name_str = "unsure"
+        return move_name_str
+    else:
+        move_name_str = dict_labels[index_predict]
+        return move_name_str 
     
     K.clear_session()
 
-    return dict_labels[index_predict]
+    return move_name_str
 
     
+##### THE NUTS AND BOLTS OPENPOSE/HUMAN POSE ESTIMATION MODEL ####
 
 # Find the Keypoints using Non Maximum Suppression on the Confidence Map
 def getKeypoints(probMap, threshold=0.1):
@@ -146,7 +107,6 @@ def getKeypoints(probMap, threshold=0.1):
         keypoints.append(maxLoc + (probMap[maxLoc[1], maxLoc[0]],))
 
     return keypoints
-
 
 # Find valid connections between the different joints of a all persons present
 def getValidPairs(output, mapIdx, frameWidth, frameHeight, detected_keypoints, POSE_PAIRS):
@@ -307,7 +267,7 @@ def frames_to_hpe(pathway_to_frames, pathway_to_skeletons, protoFile, weightsFil
             for tt in range(len(frame_names)): 
                 fileinfo=os.stat(pathway_to_frames + '/' + frame_names[tt])
 
-                if fileinfo.st_size > 0: # some zero byte images...
+                if fileinfo.st_size > 0: # Omits 0 byte images
 
                     image1 = cv2.imread(pathway_to_frames + '/' + '/' + frame_names[tt])
                     frameWidth = image1.shape[1]
