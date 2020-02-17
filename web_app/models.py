@@ -2,7 +2,6 @@
 # video --> frames --> Human Pose Estimation --> csv --> [CNN] --> Dance Move ID
 import cv2
 import numpy as np
-import pandas as pd
 import os
 from natsort import natsorted
 from keras.models import load_model
@@ -43,37 +42,34 @@ def predict(skeletons_path, parent_directory):
     user_input_skeleton_transformed = 1-np.absolute(user_input_skeleton_raw.reshape(1,36,60,1))
     
     K.clear_session()
-
+    
     model = Sequential()
 
     model.add(InputLayer(input_shape = [36,60,1]))
 
-    model.add(Conv2D(filters=60, kernel_size=[36,4],strides=[36,2],padding='same', activation='softmax'))
+    model.add(Conv2D(filters=60, kernel_size=[36,4],strides=[36,2],padding='same', activation='relu'))
     model.add(MaxPool2D(pool_size=4, padding='same'))
 
-    model.add(Conv2D(filters=60, kernel_size=[18,4],strides=[18,2],padding='same', activation='softmax'))
+    model.add(Conv2D(filters=60, kernel_size=[18,4],strides=[18,2],padding='same', activation='relu'))
     model.add(MaxPool2D(pool_size=4, padding='same'))
 
-    model.add(Conv2D(filters=60, kernel_size=[9,4],strides=[9,2],padding='same', activation='softmax'))
+    model.add(Conv2D(filters=60, kernel_size=[9,4],strides=[9,2],padding='same', activation='relu'))
     model.add(MaxPool2D(pool_size=4, padding='same'))
 
-    model.add(Dropout(0.25))
+
     model.add(Flatten())
-    model.add(Dense(512,activation='softmax'))
-    model.add(Dropout(rate=0.5))
-    model.add(Dense(3,activation='softmax'))
+    model.add(Dense(512,activation='relu'))
+    model.add(Dense(3,activation='relu'))
 
     model.load_weights('model_weights.h5')
     model.compile(optimizer=Adam(lr=1e-3), loss='categorical_crossentropy',metrics=['accuracy'])
-
     
     model_out = model.predict(user_input_skeleton_transformed)
     
     index_predict = np.argmax(model_out[0])
     dict_labels = ['turn', 'cuddle', 'shadow']
     
-    
-    if model_out[0][index_predict] <= 0.33: # if the predictions are bad
+    if model_out[0][index_predict] <= 0.05: # if the predictions are bad
         move_name_str = "unsure"
         return move_name_str
     else:
@@ -251,15 +247,11 @@ def frames_to_hpe(pathway_to_frames, pathway_to_skeletons, protoFile, weightsFil
               [47,48], [49,50], [53,54], [51,52], [55,56], 
               [37,38], [45,46]]
 
-    # colors = [ [0,100,255], [0,100,255], [0,255,255], [0,100,255], [0,255,255], [0,100,255],
-    #          [0,255,0], [255,200,100], [255,0,255], [0,255,0], [255,200,100], [255,0,255],
-    #          [0,0,255], [255,0,0], [200,200,0], [255,0,0], [200,200,0], [0,0,0]]
     
     for kk in range(len(clip_names)):
         
         time_series_clip = -1 * np.ones((2*nPoints, 2*frame_tot))
         frame_names = natsorted(listdir_nohidden(pathway_to_frames))
-#         frame_names = natsorted(listdir_nohidden(pathway_to_frames + '/' + clip_names[kk]))
         outputexists = os.path.isfile(pathway_to_skeletons + '/User_input___skeleton.csv')
         
         if int(outputexists) == 0:
@@ -273,7 +265,7 @@ def frames_to_hpe(pathway_to_frames, pathway_to_skeletons, protoFile, weightsFil
                     frameWidth = image1.shape[1]
                     frameHeight = image1.shape[0]
 
-                    #### Load the network and pass the image through the network
+                    # Load the network and pass the image through the network
                     net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
                     # Fix the input Height and get the width according to the Aspect Ratio

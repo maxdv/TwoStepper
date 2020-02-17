@@ -1,5 +1,17 @@
 <!doctype html>
-<html lang="en">    
+<html lang="en"> 
+    
+<style>
+    body {
+    background: url('../static/background1.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.jumbotron {
+    display: table-cell;
+    vertical-align: middle;
+}
+</style>    
     
 <head>
     <!-- Required meta tags -->
@@ -34,14 +46,8 @@
         Sorry, we're having trouble deciding what move you saw.
 
       {% endif %}
-
-    </p>
-    </header>
-
-    <div id="main">
-    <align=center>
-    <div style="height:12px;"></div>
-
+    
+    
      {% if  predicted_class == 'unsure' %}
 
     <b>Sorry!</b></br>
@@ -66,9 +72,16 @@
           {% endif %}
 
       {% endif %}
-      <div style="height:10px;"></div>
+    <div style="height:10px;"></div>
       <a href="{{ url_for('upload_file') }}">Try another
       video!</a><br>
       </align=center></div>
+    </p>
+    </header>
+
+    <div id="main">
+    <align=center>
+    <div style="height:12px;"></div>
+
 </body>
 </html>
