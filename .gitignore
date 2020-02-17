@@ -17,5 +17,6 @@
 #Ignore pycache
 __pycache__
 
-#Ignore notebooks
+#Ignore notebooks and checkpoints
 *.pynb
+*.pynb_checkpoints
