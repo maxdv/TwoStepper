@@ -4,7 +4,7 @@ Hi! Learning a new dance move can be tough at any skill level. I developed TwoSt
 
 TwoStepper was built as a part of a three-week project for Insight Data Science in January 2020.
 
-Visit TwoStepper at [www.twostepper.xyz](www.twostepper.xyz)!
+Visit TwoStepper at www.twostepper.xyz!
 
 ## Working with the Data
 
