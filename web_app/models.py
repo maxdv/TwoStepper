@@ -30,7 +30,10 @@ def video_to_frames(videoFile_path,frameFile_path):
         vidcap.set(1,i-1)                      
         success,image = vidcap.read(1)         # image is an array of array of [R,G,B] values
         frameId = vidcap.get(1)                # The 0th frame is often a throw-away
-        cv2.imwrite(frameFile_path + '/frame%d.jpg' % frameId, image)
+        try:
+            cv2.imwrite(frameFile_path + '/frame%d.jpg' % frameId, image)
+        except:
+            pass #not the best practice, but if the frame won't save, skip it
     vidcap.release()
     cv2.destroyAllWindows()
     
@@ -92,7 +95,7 @@ def getKeypoints(probMap, threshold=0.1):
     keypoints = []
     
     #find the blobs
-    _, contours, _ = cv2.findContours(mapMask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(mapMask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     #for each blob find the maxima
     for cnt in contours:
